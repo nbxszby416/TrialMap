@@ -1,0 +1,122 @@
+,Criteria_Name,Type,Enrollment,Is feasible to apply in Flatiron?,IE Rules in EDM
+0,Age,Inclusion,Be ≥18 years of age on day of signing informed consent.,Yes,"Age
+#inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lineoftherapy['startdate'] >= demographics['birthyear'] + @YEARS(18))"
+1,ECOG,Inclusion,Have a performance status of 0 or 1 on the ECOG Performance Scale.,Yes,"ECOG
+#Inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(ecog[‘ecogdate’] >= lineoftherapy['startdate'] - @DAYS(30) ) AND (ecog[‘ecogdate’] <= lineoftherapy['startdate'] + @DAYS(7) )
+
+MIN(ABS(ecog[‘ecogdate’] - enhanced_advancednsclc[‘advanceddiagnosisdate’] ))
+
+(ecog['ecogvalue'] == 0) OR (ecog['ecogvalue'] == 1)"
+2,Neutrophils,Inclusion,"Absolute neutrophil count (ANC) ≥1,500 /mcL",Yes,"Neutrophils
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Neutrophil count (absolute)') OR (lab['labcomponent'] == 'Granulocytes #') 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 1.5)"
+3,Platelets,Inclusion,"Platelets
+ 
+ ≥100,000 / mcL",Yes,"Platelets
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Platelet count' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 100"
+4,Hemoglobin,Inclusion,"Hemoglobin
+ ≥9 g/dL or ≥5.6 mmol/L– without transfusions for 4 weeks",Yes,"Hemoglobin
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Hemoglobin, whole blood'
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 9"
+5,Bilirubin_v2,Inclusion,"Total bilirubin
+ 
+≤ ULN",Yes,"Bilirubin_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Bilirubin (Total), serum' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= lab['maxnormcleaned']"
+6,AST_v2,Inclusion,AST (SGOT) ≤ 1.5 X ULN,Yes,"AST_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Aspartate aminotransferase (AST or SGOT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+7,ALT_v2,Inclusion,ALT (SGPT) ≤ 1.5 X ULN,Yes,"ALT_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Alanine aminotransferase (ALT or SGPT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+8,Alkaline,Inclusion,Alkaline Phosphatase ≤ 2.5 X ULN,Yes,"Alkaline
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Alkaline phosphatase (ALP)')
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] <= 2.5 * lab['maxnormcleaned'])"
+9,PDL1-exclude-Docetaxel,Exclusion,Has received prior therapy with docetaxel for NSCLC.,Yes,"PDL1-exclude-Docetaxel
+#exclusion
+
+(lineoftherapy['linenumber'] == 1)
+
+(lineoftherapy['linename'] == 'Docetaxel')"
+10,PDL1-exclude-lpilimumab,Exclusion,"Has received prior therapy with an anti-PD-1, anti-PD-L1, anti-PD-L2, anti-CD137, or anti-Cytotoxic T-lymphocyte-associated antigen-4 (CTLA-4) antibody (including ipilimumab or any other antibody or drug specifically targeting T-cell co-stimulation or checkpoint pathways) or has participated in another MK-3475 clinical trial.",Yes,"PDL1-exclude-lpilimumab
+#exclusion
+
+(lineoftherapy['linenumber'] == 1) 
+
+(lineoftherapy['linename'] == 'Ipilimumab')"
+11,CNS_Metastasis,Exclusion,"Has known active central nervous system (CNS) metastases and/or carcinomatous meningitis. Subjects with previously treated brain metastases may participate provided they are stable (without evidence of progression by MRI for at least four weeks prior to the first dose of trial treatment and any neurologic symptoms have returned to baseline), have no evidence of new or enlarging brain metastases, and are using no steroids for at least three days prior to study medication. The two brain MRIs that were used to make the determination of stable disease must be submitted to the central imaging vendor, preferably while the subject is undergoing screening. These images should be submitted retrospectively for subjects that have already been randomized.",Partially,"CNS_Metastasis
+#exclusion
+(diagnosis['diagnosiscode'] == '198.4' OR diagnosis['diagnosiscode'] == 'C79.4')"
+12,CYP3A4,Exclusion,"Subjects that require treatment with a strong inhibitor of CYP3A4 will be excluded. They may be included if there is an alternate treatment available (not a strong CYP3A4 inhibitor) and they are willing to switch prior to randomization. If a subject opts to change from a strong CYP 3A4 inhibitor to a weaker CYP 3A4 inhibitor, the subject must stop the strong CYP 3A4 inhibitor 7 days before study drug administration.",Yes,"CYP3A4
+#exclusion
+(medicationorder['drugname'] == 'ketoconazole') OR (medicationorder['drugname'] == 'itraconazole') OR (medicationorder['drugname'] == 'clarithromycin') OR (medicationorder['drugname'] == 'atazanvir') OR (medicationorder['drugname'] == 'indinavir') OR (medicationorder['drugname'] == 'nefazodone') OR (medicationorder['drugname'] == 'nelfinavir') OR (medicationorder['drugname'] == 'ritonavir') OR (medicationorder['drugname'] == 'saquinavir') OR (medicationorder['drugname'] == 'teithromycin') OR (medicationorder['drugname'] == 'voriconazole')"

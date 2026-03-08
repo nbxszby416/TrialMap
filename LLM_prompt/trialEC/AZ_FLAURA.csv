@@ -1,0 +1,95 @@
+,Criteria_Name,Type,Enrollment,Is feasible to apply in Flatiron?,IE Rules in EDM
+0,Age,Inclusion,"Male or female, aged at least 18 years. Patients from Japan aged at least 20 years.",Partially,"Age
+#inclusion
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lineoftherapy['startdate'] >= demographics['birthyear'] + @YEARS(18))"
+1,Histology_NonSquamous,Inclusion,"Pathologically confirmed adenocarcinoma of the lung (e.g., this may occur as systemic recurrence after prior surgery for early stage disease or patients may be newly diagnosed with Stage IIIB/IV disease). Patients with mixed histology are eligible if adenocarcinoma
+is the predominant histology.",Partially,"Histology_NonSquamous
+#inclusion
+(enhanced_advancednsclc['histology'] == 'Non-squamous cell carcinoma')"
+2,Staging,Inclusion,"Pathologically confirmed adenocarcinoma of the lung (e.g., this may occur as systemic recurrence after prior surgery for early stage disease or patients may be newly diagnosed with Stage IIIB/IV disease). Patients with mixed histology are eligible if adenocarcinoma
+is the predominant histology.",Yes,"Staging
+#inclusion
+(enhanced_advancednsclc['groupstage'] == 'Stage IIIB' OR enhanced_advancednsclc['groupstage'] == 'Stage IV')"
+3,ECOG,Inclusion,World Health Organization Performance Status of 0 to 1 with no clinically significant deterioration over the previous 2 weeks and a minimum life expectancy of 12 weeks.,Partially,"ECOG
+#Inclusion
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(ecog[‘ecogdate’] >= lineoftherapy['startdate'] - @DAYS(30) ) AND (ecog[‘ecogdate’] <= lineoftherapy['startdate'] + @DAYS(7) )
+
+MIN(ABS(ecog[‘ecogdate’] - enhanced_advancednsclc[‘advanceddiagnosisdate’] ))
+
+(ecog['ecogvalue'] == 0) OR (ecog['ecogvalue'] == 1)"
+4,Neutrophils,Exclusion,Absolute neutrophil count <1.5 x 109/L.,Yes,"Neutrophils
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Neutrophil count (absolute)') OR (lab['labcomponent'] == 'Granulocytes #') 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 1.5)"
+5,Platelets,Exclusion,Platelet count <100 x 109/L.,Yes,"Platelets
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Platelet count' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 100"
+6,Hemoglobin,Exclusion,Haemoglobin <90 g/L.,Yes,"Hemoglobin
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Hemoglobin, whole blood'
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 9"
+7,ALT,Exclusion,Alanine aminotransferase (ALT) >2.5x the upper limit of normal (ULN) if no demonstrable liver metastases or >5xULN in the presence of liver metastases.,Yes,"ALT
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Alanine aminotransferase (ALT or SGPT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 2.5 * lab['maxnormcleaned']"
+8,AST,Exclusion,Aspartate aminotransferase (AST) >2.5xULN if no demonstrable liver metastases or >5xULN in the presence of liver metastases.,Yes,"AST
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Aspartate aminotransferase (AST or SGOT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 2.5 * lab['maxnormcleaned']"
+9,Bilirubin,Exclusion,Total bilirubin >1.5xULN if no liver metastases or >3xULN in the presence of documented Gilbert’s Syndrome (unconjugated hyperbilirubinaemia) or liver metastases.,Partially,"Bilirubin
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Bilirubin (Total), serum' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"

@@ -1,0 +1,153 @@
+,Criteria_Name,Type,Enrollment,Is feasible to apply in Flatiron?,IE Rules in EDM
+0,ECOG,Inclusion,ECOG performance status of <= 1,Yes,"ECOG
+#Inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(ecog[‘ecogdate’] >= lineoftherapy['startdate'] - @DAYS(30) ) AND (ecog[‘ecogdate’] <= lineoftherapy['startdate'] + @DAYS(7) )
+
+MIN(ABS(ecog[‘ecogdate’] - enhanced_advancednsclc[‘advanceddiagnosisdate’] ))
+
+(ecog['ecogvalue'] == 0) OR (ecog['ecogvalue'] == 1)"
+1,Staging,Inclusion,"Subjects with histologically- or cytologically-documented NSCLC who present with Stage IIIB/ Stage IV disease (according to Version 7 of the International Association for the Study of Lung Cancer Staging Manual in Thoracic Oncology), or with recurrent or progressive disease following multimodal therapy (radiation therapy, surgical resection or definitive chemoradiation therapy for locally advanced disease).",Yes,"Staging
+#Inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+enhanced_advancednsclc[‘advanceddiagnosisdate’] -14 < lineoftherapy['startdate']"
+2,FirstProgression,Inclusion,Subjects must have experienced disease progression during or after one prior platinum-containing doublet chemotherapy (carboplatin or cisplatin) regimen for advanced or metastatic disease.,Yes,"FirstProgression
+#inclusion
+(lineoftherapy['linenumber'] == 1) AND (lineoftherapy['ismaintenancetherapy'] == False)
+
+(lineoftherapy['linename'] == 'Carboplatin,Paclitaxel') OR (lineoftherapy['linename'] == 'Carboplatin,Pemetrexed')
+
+enhanced_advnsclcprogression['progressiondate'] >= lineoftherapy['startdate']"
+3,maintenance,Inclusion,Subjects who received maintenance therapy (non-progressors with platinum-based doublet chemotherapy) and progressed are eligible,Yes,"maintenance
+#inclusion
+(lineoftherapy['linenumber'] == 1) AND (lineoftherapy['ismaintenancetherapy'] == True)
+
+(lineoftherapy['linename'] == 'Erlotinib')
+
+enhanced_advnsclcprogression['progressiondate'] >= lineoftherapy['startdate']"
+4,WBC,Inclusion,WBCs >= 2000/μL,Yes,"WBC
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'White Blood Cell Count'
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 2)"
+5,Neutrophils,Inclusion,Neutrophils >= 1500/μL,Yes,"Neutrophils
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Neutrophil count (absolute)') OR (lab['labcomponent'] == 'Granulocytes #') 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 1.5)"
+6,Platelets,Inclusion,Platelets >= 100 x 10^3/μL,Yes,"Platelets
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Platelet count' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 100"
+7,Hemoglobin,Inclusion,Hemoglobin >= 9.0 g/dL,Yes,"Hemoglobin
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Hemoglobin, whole blood'
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 9"
+8,AST_v2,Inclusion,AST <= 1.5X ULN,Yes,"AST_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Aspartate aminotransferase (AST or SGOT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+9,ALT_v2,Inclusion,ALT <= 1.5X ULN,Yes,"ALT_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Alanine aminotransferase (ALT or SGPT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+10,Bilirubin_v2,Inclusion,Total bilirubin <= ULN,Yes,"Bilirubin_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Bilirubin (Total), serum' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= lab['maxnormcleaned']"
+11,Alkaline,Inclusion,Alkaline phosphatase <= 2.5 X ULN,Yes,"Alkaline
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Alkaline phosphatase (ALP)')
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] <= 2.5 * lab['maxnormcleaned'])"
+12,Age,Inclusion,"Males and Females, >= 18 years of age",Yes,"Age
+#inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lineoftherapy['startdate'] >= demographics['birthyear'] + @YEARS(18))"
+13,CNS_Metastasis,Exclusion,"Subjects with active CNS metastases are excluded. Subjects are eligible if CNS metastases are adequately treated and subjects are neurologically returned to baseline (except for residual signs or symptoms related to the CNS treatment) for at least 2 weeks prior to enrollment. In addition, subjects must be either off corticosteroids, or on a stable or decreasing dose of <= 10 mg daily prednisone (or equivalent).",Partially,"CNS_Metastasis
+#exclusion
+(diagnosis['diagnosiscode'] == '198.4' OR diagnosis['diagnosiscode'] == 'C79.4')"
+14,EGFR-mutation,Exclusion,"Subjects with EGFR mutation regardless of mutation type are excluded. Non squamous subjects with unknown EGFR mutation status must be tested for EGFR mutation (use of PCR based test is strongly encouraged). If the EGFR mutation is positive, subject is excluded.",Partially,"EGFR-mutation
+#exclusion
+
+(enhanced_advnsclcbiomarkers['biomarkername'] == 'EGFR') AND (enhanced_advnsclcbiomarkers['biomarkerstatus']=='Mutation positive')"
+15,ALK-translocation,Exclusion,Subjects with known ALK translocation are excluded.,Partially,"ALK-translocation
+#exclusion
+
+(enhanced_advnsclcbiomarkers['biomarkername'] == 'ALK') AND (enhanced_advnsclcbiomarkers['biomarkerstatus']=='Rearrangement present')"
+16,PDL1-exclude-lpilimumab,Exclusion,"Prior therapy with anti-PD-1, anti-PD-L1, anti-PD-L2, anti-CD137, or anti-CTLA-4 antibody (including ipilimumab or any other antibody or drug specifically targeting T-cell co-stimulation or checkpoint pathways).",Yes,"PDL1-exclude-lpilimumab
+#exclusion
+
+(lineoftherapy['linenumber'] == 1) 
+
+(lineoftherapy['linename'] == 'Ipilimumab')"
+17,PDL1-exclude-Docetaxel,Exclusion,Prior treatment with docetaxel.,Yes,"PDL1-exclude-Docetaxel
+#exclusion
+
+(lineoftherapy['linenumber'] == 1)
+
+(lineoftherapy['linename'] == 'Docetaxel')"

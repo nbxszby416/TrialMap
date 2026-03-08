@@ -1,0 +1,102 @@
+,Criteria_Name,Type,Enrollment,Is feasible to apply in Flatiron?,IE Rules in EDM
+0,Histology_Squamous,Inclusion,"Diagnosis of advanced stage NSCLC considered to be squamous histology, including mixed histology, in the opinion of the investigator.",Yes,"Histology_Squamous
+#inclusion
+(enhanced_advancednsclc['histology'] == 'Squamous cell carcinoma')"
+1,Staging,Inclusion,"Completion of at least 4 cycles of platinum-based doublet chemotherapy, with or without additional [non-EGFR] targeted agents, as 1st line treatment of Stage IIIB/IV
+NSCLC. Note the below scenarios are also considered to meet this requirement:
+a. Patients relapsing within 6 months of completing adjuvant/neo- adjuvant/curative -intent chemotherapy/chemoradiotherapy (Note: these patients are still required to have had the equivalent of 4 cycles of platinum- based doublet chemotherapy except in setting noted below).
+OR
+b. Patients intending to receive four cycles of platinum-based doublet chemotherapy but due to toxicity, and not PD, discontinue just the platinum agent after at least two cycles of platinum doublet had been administered.",Partially,"Staging
+#Inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+enhanced_advancednsclc[‘advanceddiagnosisdate’] -14 < lineoftherapy['startdate']"
+2,ECOG,Inclusion,"Eastern Cooperative Oncology Group (ECOG) score of 0 or 1 (R01-0787). Refer to
+Appendix 10.2.",Yes,"ECOG
+#Inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(ecog[‘ecogdate’] >= lineoftherapy['startdate'] - @DAYS(30) ) AND (ecog[‘ecogdate’] <= lineoftherapy['startdate'] + @DAYS(7) )
+
+MIN(ABS(ecog[‘ecogdate’] - enhanced_advancednsclc[‘advanceddiagnosisdate’] ))
+
+(ecog['ecogvalue'] == 0) OR (ecog['ecogvalue'] == 1)"
+3,Neutrophils,Inclusion,Absolute neutrophil count (ANC) > 1500 / mm3. (ANC >1000/mm3 may be considered in special circumstances such as benign cyclical neutropenia as judged by the investigator and in discussion with the sponsor).,Yes,"Neutrophils
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Neutrophil count (absolute)') OR (lab['labcomponent'] == 'Granulocytes #') 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 1.5)"
+4,Platelets_v1,Inclusion,"Platelet count >75,000 / mm3.",Yes,"Platelets_v1
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Platelet count' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 75"
+5,Bilirubin,Inclusion,Total bilirubin < 1.5 times institutional ULN (Patients with Gilbert’s Syndrome total bilirubin must be <4 times institutional ULN).,Yes,"Bilirubin
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Bilirubin (Total), serum' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+6,ALT_v3,Inclusion,"Aspartate amino transferase (AST) or alanine amino transferase (ALT)
+< three times the institutional upper limit of normal (ULN) (if related to liver metastases < five times institutional ULN).",Yes,"ALT_v3
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Alanine aminotransferase (ALT or SGPT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 3 * lab['maxnormcleaned']"
+7,AST_v3,Inclusion,"Aspartate amino transferase (AST) or alanine amino transferase (ALT)
+< three times the institutional upper limit of normal (ULN) (if related to liver metastases < five times institutional ULN).",Yes,"AST_v3
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Aspartate aminotransferase (AST or SGOT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 3 * lab['maxnormcleaned']"
+8,Age,Inclusion,Age≥18years.,Yes,"Age
+#inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lineoftherapy['startdate'] >= demographics['birthyear'] + @YEARS(18))"
+9,EGFR_drug,Exclusion,Prior treatment with EGFR directed small molecules or antibodies.,Yes,"EGFR_drug
+#exclusion
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(enhanced_advnsclcbiomarkers['biomarkername'] == 'EGFR') AND (enhanced_advnsclcbiomarkers['biomarkerstatus']=='Mutation positive')
+
+(enhanced_advnsclcbiomarkers['specimencollecteddate'] < lineoftherapy['startdate']) 
+
+(medicationorder['drugname'] != 'Erlotinib') AND (medicationorder['drugname'] != 'Gefitinib')"
+10,CNS_Metastasis,Exclusion,"Active brain metastases (stable for <4 weeks, symptomatic, or leptomeningeal disease). Dexamethasone therapy will be allowed if administered as a stable dose for at least 4 weeks before randomization.",Partially,"CNS_Metastasis
+#exclusion
+(diagnosis['diagnosiscode'] == '198.4' OR diagnosis['diagnosiscode'] == 'C79.4')"

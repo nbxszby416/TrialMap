@@ -1,0 +1,151 @@
+,Criteria_Name,Type,Enrollment,Is feasible to apply in Flatiron?,IE Rules in EDM
+0,Age,Inclusion,Men and women ≥ 18 years of age,Yes,"Age
+#inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lineoftherapy['startdate'] >= demographics['birthyear'] + @YEARS(18))"
+1,Histology_Squamous,Inclusion,"Subjects with histologically- or cytologically-documented squamous cell NSCLC who present with Stage IIIB/ Stage IV disease (according to version 7 of the International Association for the Study of Lung Cancer Staging Manual in Thoracic Oncology), or recurrent disease following radiation therapy or surgical resection.",Yes,"Histology_Squamous
+#inclusion
+(enhanced_advancednsclc['histology'] == 'Squamous cell carcinoma')"
+2,Staging,Inclusion,"Subjects with histologically- or cytologically-documented squamous cell NSCLC who present with Stage IIIB/ Stage IV disease (according to version 7 of the International Association for the Study of Lung Cancer Staging Manual in Thoracic Oncology), or recurrent disease following radiation therapy or surgical resection.",Yes,"Staging
+#Inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+enhanced_advancednsclc[‘advanceddiagnosisdate’] < lineoftherapy['startdate']"
+3,FirstProgression,Inclusion,Subjects must have experienced disease recurrence or progression during or after one prior platinum-containing doublet chemotherapy regimen for advanced or metastatic disease.,Yes,"FirstProgression
+#inclusion
+(lineoftherapy['linenumber'] == 1) AND (lineoftherapy['ismaintenancetherapy'] == False)
+
+(lineoftherapy['linename'] == 'Carboplatin,Paclitaxel') OR (lineoftherapy['linename'] == 'Carboplatin,Pemetrexed')
+
+enhanced_advnsclcprogression['progressiondate'] >= lineoftherapy['startdate']"
+4,maintenance,Inclusion,"Subjects who received erlotinib as maintenance therapy (non-progressors with platinum-based doublet chemotherapy) and progressed are eligible. However, subjects who received a tyrosine kinase inhibitor after failure of a prior platinum-based therapy are excluded.",Yes,"maintenance
+#inclusion
+(lineoftherapy['linenumber'] == 1) AND (lineoftherapy['ismaintenancetherapy'] == True)
+
+(lineoftherapy['linename'] == 'Erlotinib')
+
+enhanced_advnsclcprogression['progressiondate'] >= lineoftherapy['startdate']"
+5,ECOG,Inclusion,Eastern Cooperative Oncology Arm (ECOG) performance status of ≤ 1,Yes,"ECOG
+#Inclusion
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(ecog[‘ecogdate’] >= lineoftherapy['startdate'] - @DAYS(30) ) AND (ecog[‘ecogdate’] <= lineoftherapy['startdate'] + @DAYS(7) )
+
+MIN(ABS(ecog[‘ecogdate’] - enhanced_advancednsclc[‘advanceddiagnosisdate’] ))
+
+(ecog['ecogvalue'] == 0) OR (ecog['ecogvalue'] == 1)"
+6,WBC,Inclusion,WBCs ≥ 2000/μL,Yes,"WBC
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'White Blood Cell Count'
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 2)"
+7,Neutrophils,Inclusion,Neutrophils ≥ 1500/μL,Yes,"Neutrophils
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Neutrophil count (absolute)') OR (lab['labcomponent'] == 'Granulocytes #') 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 1.5)"
+8,Platelets,Inclusion,Platelets ≥ 100 x 103/μL,Yes,"Platelets
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Platelet count' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 100"
+9,Hemoglobin,Inclusion,Hemoglobin ≥ 9.0 g/dL,Yes,"Hemoglobin
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Hemoglobin, whole blood'
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 9"
+10,AST_v2,Inclusion,AST ≤ 1.5X ULN,Yes,"AST_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Aspartate aminotransferase (AST or SGOT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+11,ALT_v2,Inclusion,ALT≤1.5XULN,Yes,"ALT_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Alanine aminotransferase (ALT or SGPT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+12,Bilirubin_v2,Inclusion,Total bilirubin ≤ ULN (except subjects with Gilbert Syndrome who must have total bilirubin <3.0 mg/dL),Yes,"Bilirubin_v2
+#inclusion
+
+(lineoftherapy['linenumber']==2) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Bilirubin (Total), serum' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= lab['maxnormcleaned']"
+13,CNS_Metastasis,Exclusion,"Subjects with active CNS metastases are excluded. Subjects are eligible if CNS metastases are adequately treated and subjects are neurologically returned to baseline (except for residual signs or symptoms related to the CNS treatment) for at least 2 weeks prior to enrollment. In addition, subjects must be either off corticosteroids, or on a stable or decreasing dose of ≤ 10 mg daily prednisone (or equivalent).",Partially,"CNS_Metastasis
+#exclusion
+(diagnosis['diagnosiscode'] == '198.4' OR diagnosis['diagnosiscode'] == 'C79.4')"
+14,PDL1-exclude-lpilimumab,Exclusion,"Prior therapy with anti-PD-1, anti-PD-L1, anti-PD-L2, anti-CD137, or
+anti-CTLA-4 antibody (including ipilimumab or any other antibody or drug specifically targeting T-cell co-stimulation or checkpoint pathways).",Yes,"PDL1-exclude-lpilimumab
+#exclusion
+
+(lineoftherapy['linenumber'] == 1) 
+
+(lineoftherapy['linename'] == 'Ipilimumab')"
+15,PDL1-exclude-Docetaxel,Exclusion,Prior treatment with docetaxel,Yes,"PDL1-exclude-Docetaxel
+#exclusion
+
+(lineoftherapy['linenumber'] == 1)
+
+(lineoftherapy['linename'] == 'Docetaxel')"
+16,CYP3A4,Exclusion,"Strong CYP3A4 inhibitors (See Section 3.4.1)
+• Ketoconazole
+• Itraconazole
+• Clarithromycin
+• Atazanvir
+• Indinavir
+• Nefazodone
+• Nelfinavir
+• Ritonavir
+• Saquinavir
+• Teithromycin
+• Voriconazole",Yes,"CYP3A4
+#exclusion
+(medicationorder['drugname'] == 'ketoconazole') OR (medicationorder['drugname'] == 'itraconazole') OR (medicationorder['drugname'] == 'clarithromycin') OR (medicationorder['drugname'] == 'atazanvir') OR (medicationorder['drugname'] == 'indinavir') OR (medicationorder['drugname'] == 'nefazodone') OR (medicationorder['drugname'] == 'nelfinavir') OR (medicationorder['drugname'] == 'ritonavir') OR (medicationorder['drugname'] == 'saquinavir') OR (medicationorder['drugname'] == 'teithromycin') OR (medicationorder['drugname'] == 'voriconazole')"

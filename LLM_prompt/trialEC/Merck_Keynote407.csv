@@ -1,0 +1,102 @@
+,Criteria_Name,Type,Enrollment,Is feasible to apply in Flatiron?,IE Rules in EDM
+0,Histology_Squamous,Inclusion,Have a histologically or cytologically confirmed diagnosis of stage IV (M1a or M1b- AJCC 7th edition) squamous NSCLC. Patients with mixed histology (example adenosquamous) are allowed if there is squamous component in the specimen.,Yes,"Histology_Squamous
+#inclusion
+(enhanced_advancednsclc['histology'] == 'Squamous cell carcinoma')"
+1,Staging,Inclusion,Have a histologically or cytologically confirmed diagnosis of stage IV (M1a or M1b- AJCC 7th edition) squamous NSCLC. Patients with mixed histology (example adenosquamous) are allowed if there is squamous component in the specimen.,Yes,"Staging
+#Inclusion
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+enhanced_advancednsclc[‘advanceddiagnosisdate’] < lineoftherapy['startdate']"
+2,neoadjuvant_treatment,Inclusion,Have not received prior systemic treatment for their metastatic NSCLC. Subjects who received adjuvant or neoadjuvant therapy are eligible if the adjuvant/neoadjuvant therapy was completed at least 12 months prior to the development of metastatic disease.,Yes,"neoadjuvant_treatment
+
+#exclusion
+
+(medicationadministration[‘drugcategory’] == 'antineoplastic')
+
+(medicationadministration[‘administereddate’] < (enhanced_advancednsclc[‘advanceddiagnosisdate’] - @DAYS(14))) AND  (medicationadministration[‘administereddate’] > (enhanced_advancednsclc[‘advanceddiagnosisdate’] - @DAYS(365)))"
+3,Age,Inclusion,Be ≥18 years of age on day of signing informed consent,Yes,"Age
+#inclusion
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lineoftherapy['startdate'] >= demographics['birthyear'] + @YEARS(18))"
+4,ECOG,Inclusion,Have a performance status of 0 or 1 on the Eastern Cooperative Oncology Group (ECOG) Performance Status.,Yes,"ECOG
+#Inclusion
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(ecog[‘ecogdate’] >= lineoftherapy['startdate'] - @DAYS(30) ) AND (ecog[‘ecogdate’] <= lineoftherapy['startdate'] + @DAYS(7) )
+
+MIN(ABS(ecog[‘ecogdate’] - enhanced_advancednsclc[‘advanceddiagnosisdate’] ))
+
+(ecog['ecogvalue'] == 0) OR (ecog['ecogvalue'] == 1)"
+5,Neutrophils,Inclusion,"Absolute neutrophil count (ANC) ≥1,500 /mcL",Yes,"Neutrophils
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Neutrophil count (absolute)') OR (lab['labcomponent'] == 'Granulocytes #') 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 1.5)"
+6,Platelets,Inclusion,"Platelets ≥100,000 / mcL",Yes,"Platelets
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Platelet count' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 100"
+7,Hemoglobin,Inclusion,Hemoglobin ≥9.0 g/dL or ≥5.6 mmol/L– 4 weeks without transfusions,Yes,"Hemoglobin
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Hemoglobin, whole blood'
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 9"
+8,Bilirubin,Inclusion,Serum total bilirubin ≤1.5xULN OR Direct bilirubin ≤ULN for subjects with total bilirubin levels >1.5xULN,Yes,"Bilirubin
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Bilirubin (Total), serum' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+9,AST,Inclusion,AST (SGOT) ≤2.5xULN,Partially,"AST
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Aspartate aminotransferase (AST or SGOT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 2.5 * lab['maxnormcleaned']"
+10,prior_treatment,Exclusion,"Before the first dose of trial treatment:
+a) Has received prior systemic cytotoxic chemotherapy for metastatic disease
+b) Has received other targeted or biological antineoplastic therapy (e.g., erlotinib, crizotinib, cetuximab) for metastatic disease
+c) Had major surgery (<3 weeks prior to first dose)",Partially,"prior_treatment
+
+#exclusion
+(lineoftherapy['linenumber'] == 1) AND (lineoftherapy['ismaintenancetherapy'] == False)
+
+(medicationadministration['administereddate'] < lineoftherapy['startdate']) AND (medicationadministration['drugcategory'] == 'antineoplastic')"
+11,CNS_Metastasis,Exclusion,"Has known active central nervous system (CNS) metastases and/or carcinomatous meningitis. Subjects with previously treated brain metastases may participate provided they are clinically stable for at least 2 weeks and, have no evidence of new or enlarging brain metastases and also are off steroids 3 days prior to dosing with study medication. Stable brain metastases by this definition should be established prior to the first dose of study medication. Subjects with asymptomatic brain metastases (i.e., no neurological symptoms, no requirements for corticosteroids, and no lesion >1.5 cm) may participate but will require regular imaging of the brain as a site of disease.",Partially,"CNS_Metastasis
+#exclusion
+(diagnosis['diagnosiscode'] == '198.4' OR diagnosis['diagnosiscode'] == 'C79.4')"

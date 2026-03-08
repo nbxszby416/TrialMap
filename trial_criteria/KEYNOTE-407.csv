@@ -1,0 +1,224 @@
+"Histology_squamous
+#inclusion
+
+(features['Histology'] == 'Squamous cell carcinoma')"
+"Prior_therapy_anticancer
+#exclusion
+
+(treatments['LineNumber'] == 1) AND (treatments['IsMaintenanceTherapy'] == False)
+
+(medicationadministration['DrugCategory'] == 'antineoplastic')
+
+(medicationadministration['AdministeredDate'] > (features['AdvancedDiagnosisDate'] - @DAYS(14))) AND (medicationadministration['AdministeredDate'] < (treatments['StartDate']))"
+"Prior_therapy_EGFR_ALK
+#exclusion
+
+(enhanced_advnsclc_orals['DrugName'] == 'erlotinib') OR (enhanced_advnsclc_orals['DrugName'] == 'gefitinib') OR (enhanced_advnsclc_orals['DrugName'] == 'afatinib') OR (enhanced_advnsclc_orals['DrugName'] == 'osimertinib') OR (enhanced_advnsclc_orals['DrugName'] == 'dacomitinib') OR (enhanced_advnsclc_orals['DrugName'] == 'crizotinib') OR (enhanced_advnsclc_orals['DrugName'] == 'ceritinib') OR (enhanced_advnsclc_orals['DrugName'] == 'alectinib') OR (enhanced_advnsclc_orals['DrugName'] == 'brigatinib') OR (enhanced_advnsclc_orals['DrugName'] == 'lorlatinib')
+
+(treatments['LineNumber'] == 1) AND (treatments['IsMaintenanceTherapy'] == False)
+
+(enhanced_advnsclc_orals['EndDate'] < treatments['StartDate'])"
+"Prior_therapy_ICI
+#exclusion
+
+(medicationadministration['DrugName'] == 'pembrolizumab' OR medicationadministration['DrugName'] == 'nivolumab' OR medicationadministration['DrugName'] == 'atezolizumab' OR medicationadministration['DrugName'] == 'durvalumab' OR medicationadministration['DrugName'] == 'avelumab' OR medicationadministration['DrugName'] == 'ipilimumab' OR medicationadministration['DrugName'] == 'tremelimumab' OR medicationadministration['DrugName'] == 'relatlimab')
+
+(treatments['LineNumber'] == 1) AND (treatments['IsMaintenanceTherapy'] == False)
+
+(medicationadministration['DrugCategory'] == 'antineoplastic')
+
+(medicationadministration['AdministeredDate'] < treatments['StartDate'])"
+"ECOG_0
+#inclusion
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(ecog['LineNumber']==1)
+
+ABS(ecog['LineStartDate'] - treatments['StartDate']) <= @DAYS(0)
+
+(ecog['ECOGValue'] == '0')"
+"ECOG_1
+#inclusion
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(ecog['LineNumber']==1)
+
+ABS(ecog['LineStartDate'] - treatments['StartDate']) <= @DAYS(0)
+
+(ecog['ECOGValue'] == '1')"
+"ECOG_2
+#inclusion
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(ecog['LineNumber']==1)
+
+ABS(ecog['LineStartDate'] - treatments['StartDate']) <= @DAYS(0)
+
+(ecog['ECOGValue'] == '2')"
+"ECOG_3
+#inclusion
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(ecog['LineNumber']==1)
+
+ABS(ecog['LineStartDate'] - treatments['StartDate']) <= @DAYS(0)
+
+(ecog['ECOGValue'] == '3')"
+"ECOG_4
+#inclusion
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(ecog['LineNumber']==1)
+
+ABS(ecog['LineStartDate'] - treatments['StartDate']) <= @DAYS(0)
+
+(ecog['ECOGValue'] == '4')"
+"ECOG_unknown
+#inclusion
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(ecog['LineNumber']==1)
+
+ABS(ecog['LineStartDate'] - treatments['StartDate']) <= @DAYS(0)
+
+(ecog['ECOGValue'] == 'Unknown')"
+
+"ANC
+#exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(lab['LabComponent'] == 'Neutrophil count (absolute)')
+
+(lab['TestDate'] >= treatments['StartDate'] - @DAYS(28) ) AND (lab['TestDate'] <= treatments['StartDate'])
+
+MIN(ABS(lab['TestDate'] - treatments['StartDate']))
+
+(lab['TestResultCleaned'] < 1.5)"
+
+"Platelets
+#exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+lab['LabComponent'] == 'Platelet count' 
+
+(lab['TestDate'] >= treatments['StartDate'] - @DAYS(28) ) AND (lab['TestDate'] <= treatments['StartDate'])
+
+MIN(ABS(lab['TestDate'] - treatments['StartDate']))
+
+lab['TestResultCleaned'] < 100"
+
+"Hemoglobin
+#exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+lab['LabComponent'] == 'Hemoglobin, whole blood'
+
+(lab['TestDate'] >= treatments['StartDate'] - @DAYS(28) ) AND (lab['TestDate'] <= treatments['StartDate'])
+
+MIN(ABS(lab['TestDate'] -treatments['StartDate']))
+
+lab['TestResultCleaned'] < 9"
+
+"ALT
+#exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+lab['LabComponent'] == 'Alanine aminotransferase (ALT or SGPT)' 
+
+(lab['TestDate'] >= treatments['StartDate'] - @DAYS(28) ) AND (lab['TestDate'] <= treatments['StartDate'])
+
+MIN(ABS(lab['TestDate'] -treatments['StartDate']))
+
+lab['TestResultCleaned'] > 2.5 * lab['MaxNormCleaned']"
+
+"AST
+#exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+lab['LabComponent'] == 'Aspartate aminotransferase (AST or SGOT)' 
+
+(lab['TestDate'] >= treatments['StartDate'] - @DAYS(28) ) AND (lab['TestDate'] <= treatments['StartDate'])
+
+MIN(ABS(lab['TestDate'] -treatments['StartDate']))
+
+lab['TestResultCleaned'] > 2.5 * lab['MaxNormCleaned']"
+
+"Total_bilirubin
+#exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+lab['LabComponent'] == 'Bilirubin (Total), serum' 
+
+(lab['TestDate'] >= treatments['StartDate'] - @DAYS(28) ) AND (lab['TestDate'] <= treatments['StartDate'])
+
+MIN(ABS(lab['TestDate'] -treatments['StartDate']))
+
+lab['TestResultCleaned'] > 1.5 * lab['MaxNormCleaned']"
+
+"Creatinine_a
+#exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(lab['LabComponent'] == 'Creatinine, serum')
+
+(lab['TestDate'] >= treatments['StartDate'] - @DAYS(28)) AND (lab['TestDate'] <= treatments['StartDate'])
+
+MIN(ABS(lab['TestDate'] - treatments['StartDate']))
+
+(lab['TestResultCleaned'] > 1.5 * lab['MaxNormCleaned'])"
+
+"Creatinine_b_v2
+#exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(lab['LabComponent'] == 'Creatinine Clearance')
+
+(lab['TestDate'] >= treatments['StartDate'] - @DAYS(28)) AND (lab['TestDate'] <= treatments['StartDate'])
+
+MIN(ABS(lab['TestDate'] - treatments['StartDate']))
+
+(lab['TestResultCleaned'] < 60)"
+
+"CNS_metastasis
+#exclusion
+
+(diagnosis['DiagnosisCode'] == '198.4' OR diagnosis['DiagnosisCode'] == '198.3' OR diagnosis['DiagnosisCode'] == 'C79.31' OR diagnosis['DiagnosisCode'] == 'C79.49')
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(diagnosis['DiagnosisDate'] < treatments['StartDate']) AND (diagnosis['DiagnosisDate'] >= treatments['StartDate'] - @DAYS(28))"
+
+"HIV_v2
+#exclusion
+
+(diagnosis['DiagnosisCode'] == '042' OR diagnosis['DiagnosisCode'] == 'B20' OR diagnosis['DiagnosisCode'] == 'V08' OR diagnosis['DiagnosisCode'] == 'Z21')
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+diagnosis['DiagnosisDate'] < treatments['StartDate']"
+
+"Hepatitis_B_C
+#exclusion
+
+(diagnosis['DiagnosisCode'] == 'B16.0' OR diagnosis['DiagnosisCode'] == 'B16.1' OR diagnosis['DiagnosisCode'] == 'B16.2' OR diagnosis['DiagnosisCode'] == 'B16.9' OR diagnosis['DiagnosisCode'] == 'B17.10' OR diagnosis['DiagnosisCode'] == 'B17.11' OR diagnosis['DiagnosisCode'] == '070.41' OR diagnosis['DiagnosisCode'] == '070.51' OR diagnosis['DiagnosisCode'] == '070.2')
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+diagnosis['DiagnosisDate'] < treatments['StartDate']"
+
+"Autoimmune_disease
+#Exclusion
+
+(treatments['LineNumber']==1) AND (treatments['IsMaintenanceTherapy']==False)
+
+(medicationorder['ExpectedStartDate'] < treatments['StartDate']) AND (medicationorder['ExpectedStartDate'] > treatments['StartDate'] - @DAYS(730))
+
+(medicationorder['DrugCategory']=='immunosuppressive')"

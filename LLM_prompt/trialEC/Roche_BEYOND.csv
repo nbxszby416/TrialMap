@@ -1,0 +1,108 @@
+,Criteria_Name,Type,Enrollment,Is feasible to apply in Flatiron?,IE Rules in EDM
+0,Age,Inclusion,Age ≥ 18 years,Yes,"Age
+#inclusion
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lineoftherapy['startdate'] >= demographics['birthyear'] + @YEARS(18))"
+1,Histology_NonSquamous,Inclusion,"Histologically or cytologically documented inoperable, locally advanced (Stage IIIb who are not amenable for combined modality treatment), metastatic (Stage IV), or recurrent non-squamous NSCLC. Diagnoses of non-squamous NSCLC that are based on sputum cytology alone are not acceptable. Mixed tumors should be categorized according to the predominant cell type.",Yes,"Histology_NonSquamous
+#inclusion
+(enhanced_advancednsclc['histology'] == 'Non-squamous cell carcinoma')"
+2,ECOG_v1,Inclusion,ECOG Performance Status of 0,Yes,"ECOG_v1
+#Inclusion
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(ecog[‘ecogdate’] >= lineoftherapy['startdate'] - @DAYS(30) ) AND (ecog[‘ecogdate’] <= lineoftherapy['startdate'] + @DAYS(7) )
+
+MIN(ABS(ecog[‘ecogdate’] - enhanced_advancednsclc[‘advanceddiagnosisdate’] ))
+
+(ecog['ecogvalue'] == 0) "
+3,Neutrophils,Inclusion,Adequate haematological function:  Absolute neutrophil count (ANC) ≥1.5×109/L AND Platelet     count     ≥100×109/L AND Hemoglobin     ≥9 g/dL (may be transfused to maintain or exceed this level)  ,Yes,"Neutrophils
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+(lab['labcomponent'] == 'Neutrophil count (absolute)') OR (lab['labcomponent'] == 'Granulocytes #') 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+(lab['testresultcleaned'] >= 1.5)"
+4,Platelets,Inclusion,Adequate haematological function: Absolute neutrophil count (ANC) ≥1.5×109/L AND Platelet count ≥100×109/L AND Hemoglobin ≥9 g/dL (may be transfused to maintain or exceed this level),Yes,"Platelets
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Platelet count' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] - lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 100"
+5,Hemoglobin,Inclusion,Adequate haematological function: Absolute neutrophil count (ANC) ≥1.5×109/L AND Platelet count ≥100×109/L AND Hemoglobin ≥9 g/dL (may be transfused to maintain or exceed this level),Yes,"Hemoglobin
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Hemoglobin, whole blood'
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] >= 9"
+6,Bilirubin,Inclusion,Adequate liver function: Total  bilirubin <1.5×upper limit of normal (ULN) AND Aspartate aminotransferase (AST) and alanine aminotransferase (ALT) <2.5×ULN in patients without liver metastases; <5×ULN in patients with liver metastases.,Partially,"Bilirubin
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Bilirubin (Total), serum' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 1.5 * lab['maxnormcleaned']"
+7,AST,Inclusion,Adequate liver function: Total bilirubin <1.5×upper limit of normal (ULN) AND Aspartate aminotransferase (AST) and alanine aminotransferase (ALT) <2.5×ULN in patients without liver metastases; <5×ULN in patients with liver metastases.,Yes,"AST
+#inclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+lab['labcomponent'] == 'Aspartate aminotransferase (AST or SGOT)' 
+
+(lab[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (lab[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(lab[‘testdate’] -lineoftherapy['startdate']))
+
+lab['testresultcleaned'] <= 2.5 * lab['maxnormcleaned']"
+8,Histology_Squamous_exc,Exclusion,"Histologically or cytologically documented inoperable, locally advanced, mixed umented inoperable, locally advanced, mixed − small cell and small cell tumors or mixed adenosquamous carcinomas with a predominant squamous component",Yes,"Histology_Squamous_exc
+#exclusion
+(enhanced_advancednsclc['histology'] == 'Squamous cell carcinoma')"
+9,CNS_Metastasis,Exclusion,"Evidence of CNS metastases, even if previously treated. Patients should have a head CT or MRI scan within 28 days prior to randomization.",Partially,"CNS_Metastasis
+#exclusion
+(diagnosis['diagnosiscode'] == '198.4' OR diagnosis['diagnosiscode'] == 'C79.4')"
+10,blood_pressure_diastolic,Exclusion,Uncontrolled hypertension (blood pressure: systolic >150 mmHg and/or diastolic >100 mmHg),Yes,"blood_pressure_diastolic
+#exclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+vitals['labcomponent'] == 'Diastolic blood pressure' 
+
+(vitals[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (vitals[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(vitals[‘testdate’] - lineoftherapy['startdate']))
+
+vitals['testresultcleaned'] > 100"
+11,blood_pressure_systolic,Exclusion,Uncontrolled hypertension (blood pressure: systolic >150 mmHg and/or diastolic >100 mmHg),Yes,"blood_pressure_systolic
+#exclusion
+
+(lineoftherapy['linenumber']==1) AND (lineoftherapy['ismaintenancetherapy']==False)
+
+vitals['labcomponent'] == 'Systolic blood pressure' 
+
+(vitals[‘testdate’] >= lineoftherapy['startdate'] - @DAYS(28) ) AND (vitals[‘testdate’] <= lineoftherapy['startdate'])
+
+MIN(ABS(vitals[‘testdate’] - lineoftherapy['startdate']))
+
+vitals['testresultcleaned'] > 150"
